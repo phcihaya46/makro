@@ -11,18 +11,18 @@ datasource db {
 }
 
 model Search {
-  id          Int           @id @default(autoincrement())
-  name        String
-  count       Int
-  user_Searches User_Search[]
+  id            Int           @id @default(autoincrement())
+  name          String
+  count         Int
+  user_searches User_Search[]
 }
 
 model User_Search {
   id       Int    @id @default(autoincrement())
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId   Int
+  userId   Int    @map("user_id")
   search   Search @relation(fields: [searchId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  searchId Int
+  searchId Int    @map("search_id")
 }
 
 enum Role {
@@ -51,7 +51,7 @@ model User {
   favorites         Favorite[]
   cart              Cart?
   orders            Order[]
-  user_Search       User_Search[]
+  user_searches     User_Search[]
 }
 
 model Shipping_Address {
@@ -109,9 +109,9 @@ model Cart_product {
   productId Int     @map("product_id")
 }
 
-model Order_Product {
+model Order_product {
   id        Int     @id @default(autoincrement())
-  quantity  Int     @default(1)
+  qunatity  Int     @default(1)
   order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   orderId   Int
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -122,13 +122,13 @@ model Order {
   id                  Int             @id @default(autoincrement())
   totalBeforeDiscount Int             @default(0) @map("total_before_discount")
   discount            Int             @default(0)
-  deliveryfee         Int             @default(0) @map("delivery_fee")
+  deliveryFee         Int             @default(0) @map("delivery_fee")
   total               Int             @default(0)
-  createAt            DateTime        @default(now()) @map("create_at")
+  createdAt           DateTime        @default(now()) @map("created_at")
   user                User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId              Int             @map("user_id")
   status              Status[]
-  order_products      Order_Product[]
+  order_products      Order_product[]
 }
 
 enum OrderStatus {
@@ -140,11 +140,11 @@ enum OrderStatus {
 }
 
 model Status {
-  id       Int         @id @default(autoincrement())
-  status   OrderStatus @default(UNPAID)
-  createAt DateTime    @default(now()) @map("create_at")
-  order    Order       @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  orderId  Int         @map("order_id")
+  id        Int         @id @default(autoincrement())
+  status    OrderStatus @default(UNPAID)
+  createdAt DateTime    @default(now()) @map("created_at")
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  orderId   Int         @map("order_id")
 }
 
 model Product {
@@ -166,10 +166,10 @@ model Product {
   userId             Int                 @map("user_id")
   favoriteProducts   Favorite_Product[]
   cart_products      Cart_product[]
-  order_products     Order_Product[]
-  category           Categoty            @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  order_products     Order_product[]
+  product_imgs       Product_Img[]
+  category           Category            @relation(fields: [categoryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   categoryId         Int
-  product_imgs       Product_img[]
   brand              Brand               @relation(fields: [brandId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   brandId            Int                 @map("brand_id")
   product_promotions Product_Promotion[]
@@ -192,14 +192,14 @@ model Promotion {
   product_promotions Product_Promotion[]
 }
 
-model Product_img {
+model Product_Img {
   id        Int     @id @default(autoincrement())
   url       String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   productId Int     @map("product_id")
 }
 
-model Categoty {
+model Category {
   id       Int       @id @default(autoincrement())
   name     String
   count    Int       @default(0)
